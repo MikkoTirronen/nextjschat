@@ -2,6 +2,7 @@ import '../styles/globals.css'
 import type { AppProps } from 'next/app'
 import { useAuthState } from "react-firebase-hooks/auth"
 import { auth } from '../firebase';
+import Login from "./login"
 
 
 function MyApp({ Component, pageProps }: AppProps) {
