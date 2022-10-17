@@ -27,8 +27,8 @@ const Logo = styled.img`
 
 function login() {
     const signIn = () => {
-        
-            //signInWithPopup(provider).catch(alert)
+        auth.signInWithPopup(provider).catch(alert)
+            
     }
   return (
     <Container>
