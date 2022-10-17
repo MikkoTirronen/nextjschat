@@ -1,6 +1,9 @@
 import firebase from "firebase/compat/app";
 import "firebase/compat/auth";
 import "firebase/compat/firestore";
+import { getFirestore } from "firebase/firestore";
+import { getAuth } from "firebase/auth";
+import { initializeApp, getApp } from "firebase/app";
 
 const firebaseConfig = {
   apiKey: "AIzaSyABVrj1xcv14u6QzlCtl3Grazoz6WhqBDM",
@@ -13,14 +16,12 @@ const firebaseConfig = {
 };
 
 // check if firebase instance is already up, if not initialize app;
-const app = !firebase.app.length
-  ? firebase.initializeApp(firebaseConfig)
-  : firebase.app();
+const app = firebase.initializeApp(firebaseConfig);
 
-const db = app.firestore();
-const auth = app.auth();
+const db = firebase.firestore()
+const auth = app.auth()
 
 //use google account as authentication
 const provider = new firebase.auth.GoogleAuthProvider();
 
-export  {db, auth,provider};
+export { db, auth, provider };
