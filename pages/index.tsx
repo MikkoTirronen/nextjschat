@@ -13,7 +13,7 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>Whatsapp!</h1>
+      <h1>Chat in a Box: ChatterBox</h1>
     <SideBar></SideBar>
     </div>
   )

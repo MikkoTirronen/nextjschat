@@ -7,8 +7,6 @@ import {  SpinnerRoundOutlined} from 'spinners-react';
     
   return (
       <div style={{ display: "grid", placeItems: "center", height: "100vh" }}>
-      
-
           <SpinnerRoundOutlined />
     </div>
   );

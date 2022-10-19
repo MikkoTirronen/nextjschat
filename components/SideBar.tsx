@@ -12,7 +12,7 @@ import Chat from "../components/Chat";
 
 
 function SideBar() {
-  const [user] = useAuthState(auth as any);
+  const [user] = useAuthState(auth as any );
 
   const userChatRef = db
     .collection("chats")
