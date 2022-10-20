@@ -10,9 +10,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "../components/Chat";
 
-
 function SideBar() {
-  const [user] = useAuthState(auth as any );
+  const [user] = useAuthState(auth as any);
 
   const userChatRef = db
     .collection("chats")
@@ -36,7 +35,7 @@ function SideBar() {
   };
 
   const chatAlreadyExists = (recipientEmail: string) => {
-   return !!chatsSnapshot?.docs.find(
+    return !!chatsSnapshot?.docs.find(
       (chat) =>
         chat.data().users.find((user: string) => user === recipientEmail)
           ?.length > 0
@@ -46,7 +45,10 @@ function SideBar() {
   return (
     <Container>
       <Header>
-        <UserAvatar onClick={() => auth.signOut()} src={user?.photoURL as string } />
+        <UserAvatar
+          onClick={() => auth.signOut()}
+          src={user?.photoURL as string}
+        />
         <IconContainer>
           <IconButton>
             <MoreVertIcon />
@@ -64,11 +66,8 @@ function SideBar() {
 
       {/*Chat List Goes Here */}
       {chatsSnapshot?.docs.map((chat) => (
-       <Chat
-          key={chat.id}
-          id={chat.id}
-        users={chat.data().users}/>
-     ))}
+        <Chat key={chat.id} id={chat.id} users={chat.data().users} />
+      ))}
     </Container>
   );
 }
@@ -76,10 +75,25 @@ function SideBar() {
 export default SideBar;
 const SideBarButton = styled(Button)`
   width: 100%;
-  border-top: 1px solid whitesmoke;
-  border-bottom: 1px solid whitesmoke;
+  &&& {
+    border-top: 1px solid whitesmoke;
+    border-bottom: 1px solid whitesmoke;
+  }
 `;
-const Container = styled.div``;
+const Container = styled.div`
+  flex: 0.45;
+  border-right: 1px solid whitesmoke;
+  height: 100vh;
+  min-width: 300px;
+  max-width: 350px;
+  overflow-y: scroll;
+
+  ::-webkit-scrollbar{
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+`;
 const Header = styled.div`
   display: flex;
   position: sticky;
@@ -98,7 +112,9 @@ const UserAvatar = styled(Avatar)`
     opacity: 0.8;
   }
 `;
-const IconContainer = styled.div``;
+const IconContainer = styled.div`
+  
+`;
 
 const Search = styled.div`
   display: flex;
@@ -111,3 +127,4 @@ const SearchInput = styled.input`
   border: none;
   flex: 1;
 `;
+
