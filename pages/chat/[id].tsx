@@ -19,8 +19,11 @@ height: 100vh;
 -ms-overflow-style: none;
 scrollbar-width: none;
 `
-
-function Chat({ chat, messages }) {
+interface Data {
+  chat: any;
+  messages: any;
+}
+function Chat({ chat, messages }: Data) {
     const [user] = useAuthState(auth as any)
   return (
     <Container>
@@ -39,7 +42,7 @@ export default Chat;
 
 export async function getServerSideProps (context: { query: { id: any; }; }) {
     const ref =  db.collection("chats").doc(context.query.id as any);
-    console.log( ref)
+    
     //prep messages
     const messagesRes = await ref.collection("messages").orderBy("timestamp", "asc").get();
     console.log(messagesRes)
