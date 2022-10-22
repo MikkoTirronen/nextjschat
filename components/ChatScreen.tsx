@@ -9,10 +9,8 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import InsertEmoticonIcon from '@mui/icons-material/InsertEmoticon';
 import MicIcon from "@mui/icons-material/Mic";
 import Message from "./Message";
-import { SettingsInputAntenna } from "@mui/icons-material";
-import firebase  from "firebase/compat";
-import useState from "react"
-import { Firestore } from "firebase/firestore";
+import firebase  from "firebase/compat/app";
+import { Firestore, Timestamp } from "firebase/firestore";
 import React from "react";
 
 export interface InputProps {
@@ -23,16 +21,17 @@ interface Data{
   chat: string[];
   messages: string[];
 }
-function ChatScreen({ chat, messages }: Data) {
+
+export interface currentUser{
+  email: string;
+  lastSeen: Timestamp;
+  photoUrl: string;
+}
+
+export function ChatScreen({ chat, messages }: any) {
  
-  
   const [user] = useAuthState(auth as any);
-
-
-  
   const [input, setInput] = React.useState("");
-  
-
   
   const router = useRouter();
   const messagesByIdList = db
@@ -47,16 +46,22 @@ function ChatScreen({ chat, messages }: Data) {
       return messagesSnapshot.docs.map(message => (
         <Message key={message.id} user={message.data().user} message={{ ...message.data(), timestamp: message.data().timestamp?.toDate().getTime(), }} />
       ))
-    }
-  };
-
-  const sendMessage = (e) => {
+    } else {
+      return JSON.parse(messages).map((message: { id: React.Key; user: currentUser; }) => (
+        <Message key={message.id} user={message.user} message={message} />
+      ))
+    
+    };
+  }
+  const sendMessage = (e: { preventDefault: () => void; }) => {
     e.preventDefault();
 
+    //update lastSeen timestamp
     db.collection("users").doc(user?.uid as string).set({
       lastSeen: firebase.firestore.FieldValue.serverTimestamp()
     }, { merge: true });
 
+    //add message to collection "messages" in database
     db.collection("chats").doc(router.query.id as any).collection("messages").add({
       timestamp: firebase.firestore.FieldValue.serverTimestamp(),
       message: input,
@@ -84,7 +89,7 @@ function ChatScreen({ chat, messages }: Data) {
           </IconButton>
         </HeaderIcons>
       </Header>
-      <MessageContainer>{/* show messages*/}<EndOfMessage /></MessageContainer>
+      <MessageContainer>{showMessages()}<EndOfMessage /></MessageContainer>
       <InputContainer>
         <InsertEmoticonIcon />
         <Input value={input} onChange={e => setInput(e.target.value)} />
@@ -95,7 +100,7 @@ function ChatScreen({ chat, messages }: Data) {
     </Container>
   );
 }
-export default ChatScreen;
+  export default ChatScreen;
 
 const Container = styled.div``;
 
