@@ -73,6 +73,7 @@ function SideBar() {
 }
 
 export default SideBar;
+
 const SideBarButton = styled(Button)`
   width: 100%;
   &&& {
