@@ -9,15 +9,15 @@ import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "../components/Chat";
+import { QuerySnapshot } from "firebase/firestore";
+import { Data } from "./ChatScreen";
 
 function SideBar() {
   const [user] = useAuthState(auth as any);
 
-  const userChatRef = db
-    .collection("chats")
-    .where("users", "array-contains", user?.email);
-
-  const [chatsSnapshot] = useCollection(userChatRef as any);
+  const [chatsSnapshot] = useCollection(db
+      .collection("chats")
+      .where("users", "array-contains", user?.email) as any );
 
   const createChat = () => {
     const input = prompt("Please enter your target email address");

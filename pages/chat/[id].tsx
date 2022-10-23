@@ -40,12 +40,12 @@ function Chat({ chat, messages }: Data) {
 
 export default Chat;
 
-export async function getServerSideProps (context: { query: { id: any; }; }) {
-    const ref =  db.collection("chats").doc(context.query.id as any);
+export async function getServerSideProps (context: { query: { id: string; }; }) {
+    const ref =  db.collection("chats").doc(context.query.id as string);
     
     //prep messages
     const messagesRes = await ref.collection("messages").orderBy("timestamp", "asc").get();
-    console.log(messagesRes)
+   
     const messages: any = messagesRes.docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data(),
@@ -60,7 +60,7 @@ export async function getServerSideProps (context: { query: { id: any; }; }) {
         id: chatRes.id,
         ...chatRes.data()
     }
-    console.log(chat, messages)
+   
     return {
         props: {
             messages: JSON.stringify(messages),

@@ -1,9 +1,10 @@
 import React from 'react'
 import styled from 'styled-components'
 
-function Message({message}:any){
+function Message({ message }: any) {
+    
   return (
-      <Container>{message.message }</Container>
+      <Container>{message.message}</Container>
   )
 }
 

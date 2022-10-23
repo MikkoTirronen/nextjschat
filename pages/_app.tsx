@@ -19,8 +19,8 @@ function MyApp({ Component, pageProps }: AppProps) {
   useEffect(() => {
     if (user) {
       db.collection("users").doc(user.uid).set({
-        email: user.email as String,
-        photoUrl: user.photoURL as String,
+        email: user.email as string,
+        photoUrl: user.photoURL as string,
         lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
       },{merge:true})
     }

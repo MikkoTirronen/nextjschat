@@ -1,6 +1,7 @@
 import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
+import ChatScreen from '../components/ChatScreen'
 import SideBar from '../components/SideBar'
 import styles from '../styles/Home.module.css'
 
@@ -14,7 +15,8 @@ const Home: NextPage = () => {
       </Head>
 
       <h1>Chat in a Box: ChatterBox</h1>
-    <SideBar></SideBar>
+      <SideBar></SideBar>
+  
     </div>
   )
 }

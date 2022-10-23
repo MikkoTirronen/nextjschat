@@ -5,7 +5,6 @@ import { Avatar } from "@mui/material";
 import { auth, db } from "../firebase";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
-import { connectFirestoreEmulator, DocumentData } from "firebase/firestore";
 import { useRouter } from "next/router";
 
 const Container = styled.div`
