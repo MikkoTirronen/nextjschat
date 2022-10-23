@@ -46,7 +46,7 @@ export async function getServerSideProps (context: { query: { id: string; }; }) 
     //prep messages
     const messagesRes = await ref.collection("messages").orderBy("timestamp", "asc").get();
    
-    const messages: any = messagesRes.docs.map((doc: any) => ({
+    const messages = messagesRes.docs.map((doc: any) => ({
         id: doc.id,
         ...doc.data(),
     }))
