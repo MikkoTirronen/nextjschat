@@ -3,6 +3,27 @@ import { useAuthState } from 'react-firebase-hooks/auth'
 import styled from 'styled-components'
 import { auth } from '../firebase';
 import moment from 'moment';
+import { currentUser } from './ChatScreen';
+
+
+
+function Message({user, message }: any) {
+    const [userLoggedIn] = useAuthState(auth as any)                                                                ;
+
+    const TypeOfMessage = user === userLoggedIn?.email ? Sender : Receiver;
+  return (
+    <Container>
+      <TypeOfMessage>
+        {message.message}
+        <Timestamp>
+          {message.timestamp ? moment(message.timestamp).format("LT") : "..."}
+        </Timestamp>
+      </TypeOfMessage>
+    </Container>
+  );
+}
+
+export default Message
 
 const Container = styled.div``
 const MessageElement = styled.div`
@@ -32,22 +53,7 @@ const Timestamp = styled.span`
   text-align: right;
   right: 0;
 `
-
-function Message({user, message }: any) {
-    const [userLoggedIn] = useAuthState(auth as any);
-
-    const TypeOfMessage = user === userLoggedIn?.email ? Sender : Receiver;
-  return (
-    <Container>
-      <TypeOfMessage>
-        {message.message}
-        <Timestamp>
-          {message.timestamp ? moment(message.timestamp).format("LT") : "..."}
-        </Timestamp>
-      </TypeOfMessage>
-    </Container>
-  );
+interface userMessage{
+  message: { message: string; user: string; timestamp: any };
+  user: currentUser | string;
 }
-
-export default Message
-

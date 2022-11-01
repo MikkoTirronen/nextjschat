@@ -3,20 +3,20 @@ import "firebase/compat/auth";
 import "firebase/compat/firestore";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyABVrj1xcv14u6QzlCtl3Grazoz6WhqBDM",
-  authDomain: "whatsappchat-3d772.firebaseapp.com",
-  projectId: "whatsappchat-3d772",
-  storageBucket: "whatsappchat-3d772.appspot.com",
-  messagingSenderId: "568875909126",
-  appId: "1:568875909126:web:dcd99a76b2a06ae743c387",
-  measurementId: "G-6TMGHP7BL3",
+  apiKey: process.env.NEXT_PUBLIC_DB_APIKEY,
+  authDomain: process.env.NEXT_PUBLIC_DB_AUTHDOMAIN,
+  projectId: process.env.NEXT_PUBLIC_DB_PROJECTID,
+  storageBucket: process.env.NEXT_PUBLIC_DB_STORAGEBUCKET,
+  messagingSenderId: process.env.NEXT_PUBLIC_DB_MESSAGINGSENDERID,
+  appId: process.env.NEXT_PUBLIC_DB_APPID,
+  measurementId: process.env.NEXT_PUBLIC_DB_MEASUREMENTID,
 };
 
 // check if firebase instance is already up, if not initialize app;
 const app = firebase.initializeApp(firebaseConfig);
 
-const db = firebase.firestore()
-const auth = app.auth()
+const db = firebase.firestore();
+const auth = app.auth();
 
 //use google account as authentication
 const provider = new firebase.auth.GoogleAuthProvider();

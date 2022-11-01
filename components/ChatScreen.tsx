@@ -1,6 +1,6 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
-import { auth, db } from "../firebase";
+import { db } from "../firebase";
 import { useRouter } from "next/router";
 import { Avatar, IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -10,81 +10,25 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import MicIcon from "@mui/icons-material/Mic";
 import Message from "./Message";
 import firebase from "firebase/compat/app";
-import { Firestore, Timestamp } from "firebase/firestore";
+import { Timestamp,  } from "firebase/firestore";
 import React from "react";
 import getRecipientEmail from "../utils/getRecipientEmail";
 import TimeAgo from "timeago-react"
-
-const Container = styled.div``;
-
-const Header = styled.div`
-  position: sticky;
-  background-color: white;
-  z-index: 100;
-  top: 0;
-  display: flex;
-  padding: 11px;
-  height: 80px;
-  align-items: center;
-  border-bottom: 1px solid whitesmoke;
-`;
-
-const HeaderInformation = styled.div`
-  margin-left: 15px;
-  flex: 1;
-
-  > h3 {
-    margin-bottom: 3px;
-  }
-  > p {
-    font-size: 14px;
-    color: grey;
-  }
-`;
-const HeaderIcons = styled.div``;
-const MessageContainer = styled.div`
-  padding: 30px;
-  background-color: #e5ded8;
-  min-height: 90vh;
-`;
-const EndOfMessage = styled.div``;
-
-const InputContainer = styled.form`
-  display: flex;
-  align-items: center;
-  padding: 10px;
-  position: sticky;
-  background-color: white;
-  z-index: 100;
-  bottom: 0;
-`;
-
-const Input = styled.input`
-  flex: 1;
-  align-items: center;
-  padding: 20px;
-  position: sticky;
-  bottom: 0;
-  background-color: whitesmoke;
-  outline: 0;
-  margin-left: 15px;
-  margin-right: 15px;
-  border-radius: 10px;
-`;
+import { getAuth } from "firebase/auth";
 
 export interface Data {
   chat: { users: { [key: number]: number; email: string } };
   messages: string;
 }
 
-export interface currentUser {
+export type currentUser = {
   email: string;
   lastSeen: Timestamp;
   photoUrl: string;
 }
 
 export function ChatScreen({ chat, messages }: Data) {
-  const [user] = useAuthState(auth as any);
+  const [user] = useAuthState(getAuth());
   const [input, setInput] = React.useState("");
 
   const router = useRouter();
@@ -92,7 +36,7 @@ export function ChatScreen({ chat, messages }: Data) {
   const [messagesSnapshot] = useCollection(
     db
       .collection("chats")
-      .doc(router.query.id as any)
+      .doc(router.query.id as string)
       .collection("messages")
       .orderBy("timestamp", "asc") as any
   );
@@ -196,3 +140,59 @@ export function ChatScreen({ chat, messages }: Data) {
 }
 export default ChatScreen;
 
+const Container = styled.div``;
+
+const Header = styled.div`
+  position: sticky;
+  background-color: white;
+  z-index: 100;
+  top: 0;
+  display: flex;
+  padding: 11px;
+  height: 80px;
+  align-items: center;
+  border-bottom: 1px solid whitesmoke;
+`;
+
+const HeaderInformation = styled.div`
+  margin-left: 15px;
+  flex: 1;
+
+  > h3 {
+    margin-bottom: 3px;
+  }
+  > p {
+    font-size: 14px;
+    color: grey;
+  }
+`;
+const HeaderIcons = styled.div``;
+const MessageContainer = styled.div`
+  padding: 30px;
+  background-color: #e5ded8;
+  min-height: 90vh;
+`;
+const EndOfMessage = styled.div``;
+
+const InputContainer = styled.form`
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  position: sticky;
+  background-color: white;
+  z-index: 100;
+  bottom: 0;
+`;
+
+const Input = styled.input`
+  flex: 1;
+  align-items: center;
+  padding: 20px;
+  position: sticky;
+  bottom: 0;
+  background-color: whitesmoke;
+  outline: 0;
+  margin-left: 15px;
+  margin-right: 15px;
+  border-radius: 10px;
+`;
