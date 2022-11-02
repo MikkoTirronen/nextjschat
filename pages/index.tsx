@@ -1,11 +1,27 @@
-import type { NextPage } from 'next'
-import Head from 'next/head'
-import Image from 'next/image'
-import ChatScreen from '../components/ChatScreen'
-import SideBar from '../components/SideBar'
-import styles from '../styles/Home.module.css'
+import type { NextPage } from "next";
+import Head from "next/head";
+import styled from "styled-components";
+import MainChat from "../components/MainChat";
+import SideBar from "../components/SideBar";
+import { db } from "../firebase";
 
-const Home: NextPage = () => {
+const ChatContainer = styled.div`
+  flex: 1;
+  overflow: scroll;
+  height: 100vh;
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+`;
+const Container = styled.div`
+  display: flex;
+`
+const Header = styled.h1`
+text-align: center;
+`
+const Home: NextPage = ({ mainMessages }: any) => {
   return (
     <div>
       <Head>
@@ -14,11 +30,46 @@ const Home: NextPage = () => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <h1>Chat in a Box: ChatterBox</h1>
+      
+      <Container>
       <SideBar></SideBar>
-  
+      <ChatContainer><MainChat messages={mainMessages}></MainChat></ChatContainer>
+      </Container>
     </div>
-  )
-}
+  );
+};
 
-export default Home
+export default Home;
+
+export async function getServerSideProps(context: { query: { id: string } }) {
+  
+  const ref = db.collection("mainchat").doc(context.query.id as string);
+ 
+  //prep messages
+  const messagesRes = await ref
+    .collection("messages")
+    .orderBy("timestamp", "asc")
+    .get();
+  
+  const messages = messagesRes.docs
+    .map((doc: any) => ({
+      id: doc.id,
+      ...doc.data(),
+    }))
+    .map((messages) => ({
+      ...messages,
+      timestamp: messages.timestamp.toDate().getTime(),
+    }));
+  //prep the chats
+  // const chatRes = await ref.get();
+  // const chat = {
+  //   id: chatRes.id,
+  //   ...chatRes.data(),
+  // };
+
+  return {
+    props: {
+      mainMessages: JSON.stringify(messages),
+    },
+  };
+}
