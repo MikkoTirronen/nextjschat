@@ -12,6 +12,7 @@ const firebaseConfig = {
   measurementId: process.env.NEXT_PUBLIC_DB_MEASUREMENTID,
 };
 
+
 // check if firebase instance is already up, if not initialize app;
 const app = firebase.initializeApp(firebaseConfig);
 
@@ -21,4 +22,4 @@ const auth = app.auth();
 //use google account as authentication
 const provider = new firebase.auth.GoogleAuthProvider();
 
-export { db, auth, provider };
+export { db, auth, provider, app };

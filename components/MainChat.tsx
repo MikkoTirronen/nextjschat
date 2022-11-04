@@ -1,6 +1,6 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
-import { db, auth } from "../firebase";
+import { db, auth, app } from "../firebase";
 import { useRouter } from "next/router";
 import { IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -22,68 +22,100 @@ import {
     serverTimestamp,
   
 } from "firebase/firestore";
-import { Auth } from "mongodb";
+import { currentUser } from "./ChatScreen";
 
-function MainChat({ messages }: any) {
+function MainChat({ mainMessages }: any) {
     const [user] = useAuthState(getAuth());
     const [input, setInput] = React.useState("");
 
     const router = useRouter();
-    const myData = db
-        .collection("mainchat")
-        .doc(router.query.id as string)
-        .collection(messages);
-  
 
 
-  //   const [messagesSnapshot] = useCollection(
-  //     db
+   const [messagesSnapshot] = useCollection(
+  //   //  db
   //       .collection("mainchat")
   //       .doc(router.query.id as string)
   //       .collection("messages")
   //       .orderBy("timestamp", "asc") as any
-  //   );
-  //   const showMessages = () => {
-  //     if (messagesSnapshot) {
-  //       return messagesSnapshot.docs.map((message) => (
-  //         <Message
-  //           key={message.id}
-  //           user={message.data().user}
-  //           message={{
-  //             ...message.data(),
-  //             timestamp: message.data().timestamp?.toDate().getTime(),
-  //           }}
-  //         />
-  //       ));
-  //     }
-  //   };
-  //   const sendMessage = (e: { preventDefault: () => void }) => {
-  //     e.preventDefault();
+     );
+     
+     const FirestoreCollection = () => {
+      const [value, loading, error] = useCollection(
+        collection(db, 'mainchat'),
+        {
+          snapshotListenOptions: { includeMetadataChanges: true },
+        }
+      );
 
-  //     //update lastSeen timestamp
-  //     db.collection("users")
-  //       .doc(user?.uid as string)
-  //       .set(
-  //         {
-  //           lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-  //         },
-  //         { merge: true }
-  //       );
+      console.log('mainChat collection:', value, loading, error)
+      return (
+        <div>
+          <p>
+            {error && <strong>Error: {JSON.stringify(error)}</strong>}
+            {loading && <span>Collection: Loading...</span>}
+            {value && !loading && (
+              <span>
+                Collection:{' '}
+                {console.log('Got messages:', value.docs.length)}
+                {value.docs.map((doc) => (
+                  <p key={doc.id}>{doc.data.toString()}</p>
+                ))}
+              </span>
+            )}
+          </p>
+        </div>
+      );
+    };
 
-  //     //add message to collection "messages" in database
-  //     db.collection("mainchat")
-  //       .doc(router.query.id as any)
-  //       .collection("messages")
-  //       .add({
-  //         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
-  //         message: input,
-  //         user: user?.email,
-  //         photoUrl: user?.photoURL,
-  //       });
+     const showMessages = () => {
+       if (messagesSnapshot) {
+         return messagesSnapshot.docs.map((message) => (
+           <Message
+             key={message.id}
+             user={message.data().user}
+             message={{
+               ...message.data(),
+               timestamp: message.data().timestamp?.toDate().getTime(),
+             }}
+           />
+         ));
+       }else {
+        return JSON.parse(mainMessages).map(
+          (message: { id: React.Key; user: currentUser }) => (
+          
+            <Message key={message.id} user={message.user} message={message} />
+          )
+        );
+      }
+     };
+     const sendMessage = (e: { preventDefault: () => void }) => {
+       e.preventDefault();
 
-  //     setInput("");
-  //   };
+       //update lastSeen timestamp
+       db.collection("users")
+         .doc(user?.uid as string)
+         .set(
+           {
+             lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+           },
+           { merge: true }
+         );
 
+       //add message to collection "messages" in database
+       db.collection("mainchat")
+         .doc(router.query.id as any)
+         .collection("messages")
+         .add({
+           timestamp: firebase.firestore.FieldValue.serverTimestamp(),
+           message: input,
+           user: user?.email,
+           photoUrl: user?.photoURL,
+         });
+
+      setInput("");
+    };
+
+  
   return (
     <Container>
       <Header>
@@ -100,7 +132,7 @@ function MainChat({ messages }: any) {
         </HeaderIcons>
       </Header>
           <MessageContainer>
-              <p id="#HERE"></p>
+          {FirestoreCollection()} 
         <EndOfMessage />
       </MessageContainer>
       <InputContainer>
