@@ -43,15 +43,13 @@ export default Home;
 
 export async function getServerSideProps(context: { query: { id: string } }) {
   
-  const ref = db.collection("mainchat").doc(context.query.id as string);
+  const ref = db.collection("mainchat");
  
   //prep messages
-  const messagesRes = await ref
-    .collection("messages")
-    .orderBy("timestamp", "asc")
-    .get();
+  const mainChatMessages = await ref
+    .orderBy("timestamp", "asc").get();
   
-  const messages = messagesRes.docs
+  const messages = mainChatMessages.docs
     .map((doc: any) => ({
       id: doc.id,
       ...doc.data(),
