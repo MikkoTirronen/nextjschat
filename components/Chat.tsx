@@ -8,7 +8,6 @@ import { useCollection } from "react-firebase-hooks/firestore";
 import { NextRouter, useRouter } from "next/router";
 import { DocumentData, Timestamp } from "firebase/firestore";
 
-
 const Container = styled.div`
   display: flex;
   align-items: center;
@@ -21,32 +20,31 @@ const UserAvatar = styled(Avatar)`
   margin-right: 15px;
 `;
 
-
-export interface user{
+export interface user {
   email: string;
   lastSeen: Timestamp;
-  photoUrl: string
+  photoURL: string;
 }
-function Chat({ id, users }: { id: string, users: [user] }) {
+function Chat({ id, users }: { id: string; users: [user] }) {
   const router: NextRouter = useRouter();
 
-
-  const [user] = useAuthState(auth as any) ;
+  const [user] = useAuthState(auth as any);
 
   // const recipientChatRef: firebase.firestore.Query<firebase.firestore.DocumentData> =
-    // db.collection("users").where("email", "==", getRecipientEmail(users, user));
-  
-  const [recipientSnapshot] =
-    useCollection(
-      // recipientChatRef as any
-      db.collection("users").where("email", "==", getRecipientEmail(users, user)) as any
-    );
+  // db.collection("users").where("email", "==", getRecipientEmail(users, user));
+
+  const [recipientSnapshot] = useCollection(
+    // recipientChatRef as any
+    db
+      .collection("users")
+      .where("email", "==", getRecipientEmail(users, user)) as any
+  );
 
   const recipientEmail: string = getRecipientEmail(users, user);
 
-  const recipient: DocumentData | undefined = recipientSnapshot?.docs?.[0]?.data();
+  const recipient: DocumentData | undefined =
+    recipientSnapshot?.docs?.[0]?.data();
 
- 
   const enterChat = () => {
     router.push(`/chat/${id}`);
   };
@@ -54,7 +52,7 @@ function Chat({ id, users }: { id: string, users: [user] }) {
   return (
     <Container onClick={enterChat}>
       {recipient ? (
-        <UserAvatar src={`${recipient?.photoUrl}`} />
+        <UserAvatar src={`${recipient?.photoURL}`} />
       ) : (
         <UserAvatar>{recipientEmail[0]}</UserAvatar>
       )}

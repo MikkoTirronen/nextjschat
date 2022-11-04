@@ -10,14 +10,12 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import { useCollection } from "react-firebase-hooks/firestore";
 import Chat from "../components/Chat";
 
-
-
 function SideBar() {
-  const [user] = useAuthState(auth as any );
+  const [user] = useAuthState(auth as any);
 
-  const [chatsSnapshot] = useCollection(db
-      .collection("chats")
-      .where("users", "array-contains", user?.email) as any );
+  const [chatsSnapshot] = useCollection(
+    db.collection("chats").where("users", "array-contains", user?.email) as any
+  );
 
   const createChat = () => {
     const input = prompt("Please enter your target email address");

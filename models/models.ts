@@ -1,4 +1,7 @@
-
-
-export interface message{ message: string, timestamp: number, user: string, photoUrl: string }
-export type messages= { [index: string]: string | number}
+export interface message {
+  message: string;
+  timestamp: number;
+  user: string;
+  photoURL: string;
+}
+export type messages = { [index: string]: string | number };

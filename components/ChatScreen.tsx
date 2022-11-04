@@ -10,10 +10,10 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import MicIcon from "@mui/icons-material/Mic";
 import Message from "./Message";
 import firebase from "firebase/compat/app";
-import { Timestamp,  } from "firebase/firestore";
+import { Timestamp } from "firebase/firestore";
 import React from "react";
 import getRecipientEmail from "../utils/getRecipientEmail";
-import TimeAgo from "timeago-react"
+import TimeAgo from "timeago-react";
 import { getAuth } from "firebase/auth";
 
 export interface Data {
@@ -24,8 +24,8 @@ export interface Data {
 export type currentUser = {
   email: string;
   lastSeen: Timestamp;
-  photoUrl: string;
-}
+  photoURL: string;
+};
 
 export function ChatScreen({ chat, messages }: Data) {
   const [user] = useAuthState(getAuth());
@@ -48,11 +48,10 @@ export function ChatScreen({ chat, messages }: Data) {
   );
 
   const recipient = recipientSnapshot?.docs?.[0]?.data();
-  const recipientEmail = getRecipientEmail(chat.users, user)
+  const recipientEmail = getRecipientEmail(chat.users, user);
 
   const showMessages = () => {
     if (messagesSnapshot) {
-     
       return messagesSnapshot.docs.map((message) => (
         <Message
           key={message.id}
@@ -92,7 +91,7 @@ export function ChatScreen({ chat, messages }: Data) {
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
         message: input,
         user: user?.email,
-        photoUrl: user?.photoURL,
+        photoURL: user?.photoURL,
       });
 
     setInput("");
@@ -101,20 +100,26 @@ export function ChatScreen({ chat, messages }: Data) {
   return (
     <Container>
       <Header>
-        {recipient && recipient? (<Avatar src={recipient?.photoUrl} />) : (<Avatar >{recipientEmail[0]}</Avatar>)}
-        
+        {recipient && recipient ? (
+          <Avatar src={recipient?.photoURL} />
+        ) : (
+          <Avatar>{recipientEmail[0]}</Avatar>
+        )}
 
         <HeaderInformation>
           <h3>{recipientEmail}</h3>
           {recipientSnapshot ? (
             <p>
-              last active: {" "}
+              last active:{" "}
               {recipient?.lastSeen?.toDate() ? (
                 <TimeAgo datetime={recipient?.lastSeen?.toDate()} />
               ) : (
                 "unavailable"
-              )}</p>
-              ): "loading"}
+              )}
+            </p>
+          ) : (
+            "loading"
+          )}
         </HeaderInformation>
         <HeaderIcons>
           <IconButton>

@@ -1,11 +1,11 @@
-import '../styles/globals.css'
-import type { AppProps } from 'next/app'
-import { useAuthState } from "react-firebase-hooks/auth"
-import { auth, db } from '../firebase';
-import Login from "./login"
-import Loading from '../components/Loading';
+import "../styles/globals.css";
+import type { AppProps } from "next/app";
+import { useAuthState } from "react-firebase-hooks/auth";
+import { auth, db } from "../firebase";
+import Login from "./login";
+import Loading from "../components/Loading";
 import firebase from "firebase/compat/app";
-import {useEffect} from "react"
+import { useEffect } from "react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const [user, loading] = useAuthState(auth as any);
@@ -13,24 +13,27 @@ function MyApp({ Component, pageProps }: AppProps) {
   interface CurrentUser {
     email: string;
     lastSeen?: Date;
-    photoUrl?: string;
+    photoURL?: string;
   }
 
   useEffect(() => {
     if (user) {
-      db.collection("users").doc(user.uid).set({
-        email: user.email as string,
-        photoUrl: user.photoURL as string,
-        lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
-      },{merge:true})
+      db.collection("users")
+        .doc(user.uid)
+        .set(
+          {
+            email: user.email as string,
+            photoURL: user.photoURL as string,
+            lastSeen: firebase.firestore.FieldValue.serverTimestamp(),
+          },
+          { merge: true }
+        );
     }
-  
   }, [user]);
-  
 
-  if(loading) return <Loading/>
-  if(!user) return <Login/>
-  return <Component {...pageProps} />
+  if (loading) return <Loading />;
+  if (!user) return <Login />;
+  return <Component {...pageProps} />;
 }
 
-export default MyApp
+export default MyApp;
