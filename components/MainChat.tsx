@@ -46,9 +46,14 @@ function MainChat({ mainMessages }: any) {
         {value && !loading && (
           <span>
             {value.docs.map((doc) => (
-              <Message key={doc.id} user={doc.data().user} message={doc.data()}>
-               
-              </Message>
+              <Message
+                key={doc.id}
+                user={doc.data().user}
+                message={{
+                  ...doc.data(),
+                  timestamp: doc.data().timestamp?.toDate().getTime(),
+                }}
+              ></Message>
             ))}
           </span>
         )}

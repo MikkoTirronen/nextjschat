@@ -7,16 +7,16 @@ import { currentUser } from './ChatScreen';
 
 
 
-function Message({user, message }: any) {
+function Message({user, message, timestamp }: any) {
     const [userLoggedIn] = useAuthState(auth as any)                                                                ;
 
-    const TypeOfMessage = user === userLoggedIn?.email ? Sender : Receiver;
+  const TypeOfMessage = user === userLoggedIn?.email ? Sender : Receiver;
   return (
     <Container>
       <TypeOfMessage>
         {message.message}
         <Timestamp>
-          {message.timestamp ? moment(message.timestamp).format("LT") : "..."}
+          {message.timestamp ? moment(message.timestamp).format("LLLL") : "..."}
         </Timestamp>
       </TypeOfMessage>
     </Container>
@@ -31,7 +31,7 @@ width: fit-content;
 padding: 15px;
 border-radius: 8px;
 margin: 10px;
-min-width: 60px;
+min-width: 200px;
 padding-bottom: 26px;
 position: relative;
 text-align: right;`
@@ -47,7 +47,7 @@ text-align: left;
 const Timestamp = styled.span`
   color: grey;
   padding: 10px;
-  font-size: 9px;
+  font-size: 11px;
   position: absolute;
   bottom: 0;
   text-align: right;
