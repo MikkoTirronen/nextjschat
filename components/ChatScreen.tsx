@@ -86,7 +86,7 @@ export function ChatScreen({ chat, messages }: Data) {
 
     //add message to collection "messages" in database
     db.collection("chats")
-      .doc(router.query.id as any)
+      .doc(router.query.id as string)
       .collection("messages")
       .add({
         timestamp: firebase.firestore.FieldValue.serverTimestamp(),
