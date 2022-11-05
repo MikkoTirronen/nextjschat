@@ -31,7 +31,7 @@ width: fit-content;
 padding: 15px;
 border-radius: 8px;
 margin: 10px;
-min-width: 200px;
+min-width: 210px;
 padding-bottom: 26px;
 position: relative;
 text-align: right;`
