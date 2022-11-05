@@ -1,7 +1,6 @@
 import { useAuthState } from "react-firebase-hooks/auth";
 import styled from "styled-components";
-import { db, auth, app } from "../firebase";
-import { useRouter } from "next/router";
+import { db } from "../firebase";
 import { IconButton } from "@mui/material";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -12,39 +11,23 @@ import Message from "./Message";
 import firebase from "firebase/compat/app";
 import React, { useRef } from "react";
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref, onValue, orderByChild } from "firebase/database";
 import {
-  addDoc,
   collection,
-  doc,
-  Firestore,
-  getFirestore,
-  onSnapshot,
   orderBy,
   query,
-  serverTimestamp,
+  Timestamp,
 } from "firebase/firestore";
-import { currentUser } from "./ChatScreen";
 import Loading from "./Loading";
+import scrollToBottom from "../utils/scrollToBottom";
 
 function MainChat({ mainMessages }: any) {
   const [user] = useAuthState(getAuth());
   const [input, setInput] = React.useState("");
-  const mostRecentMessage = useRef(null)
+  const mostRecentMessage = useRef<HTMLDivElement>(null!);
 
-  //   const [messagesSnapshot] =() => useCollection();
-  //   //  db
-  //       .collection("mainchat")
-  //       .doc(router.query.id as string)
-  //       .collection("messages")
-  //       .orderBy("timestamp", "asc") as any
-
-  const FirestoreCollection = () => {
+  const FirestoreCollection = ()=> {
     const [value, loading, error] = useCollection(
-      query(
-        collection(db, "mainchat"),
-        orderBy("timestamp", "asc")
-      )
+      query(collection(db, "mainchat"), orderBy("timestamp", "asc"))
     );
 
     return (
@@ -52,23 +35,27 @@ function MainChat({ mainMessages }: any) {
         {error && <strong>Error: {JSON.stringify(error)}</strong>}
         {loading && <Loading />}
         {value && !loading && (
-          <span>
-            {value.docs.map((doc) => (
-              <Message
-                key={doc.id}
-                user={doc.data().user}
-                message={{
-                  ...doc.data(),
-                  timestamp: doc.data().timestamp?.toDate().getTime(),
-                }}
-              ></Message>
-            ))}
-          </span>
+          <>
+            <span>
+              {value.docs.map((doc) => (
+                <Message
+                  key={doc.id}
+                  user={doc.data().user}
+                  message={{
+                    ...doc.data(),
+                    timestamp: doc.data().timestamp?.toDate().getTime(),
+                  }}
+                  
+                ></Message>
+                
+              ))}
+            </span>
+            {value && !loading && scrollToBottom(mostRecentMessage)}
+          </>
         )}
       </div>
     );
   };
-
 
   const sendMessage = (e: { preventDefault: () => void }) => {
     e.preventDefault();
@@ -92,6 +79,7 @@ function MainChat({ mainMessages }: any) {
     });
 
     setInput("");
+    scrollToBottom(mostRecentMessage);
   };
 
   return (
@@ -111,7 +99,7 @@ function MainChat({ mainMessages }: any) {
       </Header>
       <MessageContainer>
         {FirestoreCollection()}
-        <EndOfMessage />
+        <EndOfMessage ref={mostRecentMessage} />
       </MessageContainer>
       <InputContainer>
         <InsertEmoticonIcon />
@@ -161,7 +149,9 @@ const MessageContainer = styled.div`
   background-color: #e5ded8;
   min-height: 90vh;
 `;
-const EndOfMessage = styled.div``;
+const EndOfMessage = styled.div`
+  margin-bottom: 50px;
+`;
 
 const InputContainer = styled.form`
   display: flex;
