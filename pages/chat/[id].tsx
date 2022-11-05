@@ -7,6 +7,8 @@ import {db, auth} from "../../firebase"
 import { useAuthState } from "react-firebase-hooks/auth";
 import getRecipientEmail from "../../utils/getRecipientEmail";
 import { GetServerSideProps } from "next";
+import { Query } from "mongoose";
+import { Timestamp } from "firebase/firestore";
 
 const Container = styled.div`
   display: flex;
@@ -46,13 +48,13 @@ export async function getServerSideProps (context: { query: { id: string; }; }) 
     //prep messages
     const messagesRes = await ref.collection("messages").orderBy("timestamp", "asc").get();
    
-    const messages = messagesRes.docs.map((doc: any) => ({
+    const messages = messagesRes.docs.map((doc): {id:string, timestamp?: Timestamp} => ({
         id: doc.id,
         ...doc.data(),
     }))
         .map((messages) => ({
             ...messages,
-            timestamp: messages.timestamp.toDate().getTime()    
+            timestamp: messages.timestamp?.toDate().getTime()    
     }))
     //prep the chats
     const chatRes = await ref.get();
