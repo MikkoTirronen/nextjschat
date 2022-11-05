@@ -10,22 +10,27 @@ import InsertEmoticonIcon from "@mui/icons-material/InsertEmoticon";
 import MicIcon from "@mui/icons-material/Mic";
 import Message from "./Message";
 import firebase from "firebase/compat/app";
-import React from "react";
+import React, { useRef } from "react";
 import { getAuth } from "firebase/auth";
-import { getDatabase, ref, onValue } from "firebase/database";
+import { getDatabase, ref, onValue, orderByChild } from "firebase/database";
 import {
   addDoc,
   collection,
+  doc,
+  Firestore,
   getFirestore,
   onSnapshot,
+  orderBy,
   query,
   serverTimestamp,
 } from "firebase/firestore";
 import { currentUser } from "./ChatScreen";
+import Loading from "./Loading";
 
 function MainChat({ mainMessages }: any) {
   const [user] = useAuthState(getAuth());
   const [input, setInput] = React.useState("");
+  const mostRecentMessage = useRef(null)
 
   //   const [messagesSnapshot] =() => useCollection();
   //   //  db
@@ -35,14 +40,17 @@ function MainChat({ mainMessages }: any) {
   //       .orderBy("timestamp", "asc") as any
 
   const FirestoreCollection = () => {
-    const [value, loading, error] = useCollection(collection(db, "mainchat"), {
-      snapshotListenOptions: { includeMetadataChanges: true },
-    });
+    const [value, loading, error] = useCollection(
+      query(
+        collection(db, "mainchat"),
+        orderBy("timestamp", "asc")
+      )
+    );
 
     return (
       <div>
         {error && <strong>Error: {JSON.stringify(error)}</strong>}
-        {loading && <span>Collection: Loading...</span>}
+        {loading && <Loading />}
         {value && !loading && (
           <span>
             {value.docs.map((doc) => (
@@ -61,26 +69,7 @@ function MainChat({ mainMessages }: any) {
     );
   };
 
-//   const showMessages = () => {
-//     if (messagesSnapshot) {
-//       return messagesSnapshot.docs.map((message) => (
-//         <Message
-//           key={message.id}
-//           user={message.data().user}
-//           message={{
-//             ...message.data(),
-//             timestamp: message.data().timestamp,
-//           }}
-//         />
-//       ));
-//     } else {
-//       return JSON.parse(mainMessages).map(
-//         (message: { id: React.Key; user: currentUser }) => (
-//           <Message key={message.id} user={message.user} message={message} />
-//         )
-//       );
-//     }
-//   };
+
   const sendMessage = (e: { preventDefault: () => void }) => {
     e.preventDefault();
 
