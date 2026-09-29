@@ -34,3 +34,15 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# .NET
+bin/
+obj/
+.vs/
+*.user
+*.suo
+TestResults/
+appsettings.Local.json
+*.pfx
+*.p12
+*.key

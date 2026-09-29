@@ -1,0 +1,67 @@
+@page
+@model IndexModel
+@{ ViewData["Title"] = "Secure chat"; }
+
+<div class="chat-app" data-chat-app>
+    <aside class="sidebar">
+        <header class="sidebar-header">
+            <div class="brand-mark" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M7.5 10V8.5a4.5 4.5 0 0 1 9 0V10m-10 0h11a1 1 0 0 1 1 1v8a1 1 0 0 1-1 1h-11a1 1 0 0 1-1-1v-8a1 1 0 0 1 1-1Z"/><path d="M12 14v2"/></svg></div>
+            <div class="brand-copy"><strong>Quietline</strong><span>Private workspace</span></div>
+            <button class="icon-button" type="button" aria-label="Settings">@Html.Raw(Icon("dots"))</button>
+        </header>
+        <div class="sidebar-tools">
+            <label class="search-box">@Html.Raw(Icon("search"))<input type="search" placeholder="Search conversations" aria-label="Search conversations" data-chat-search /><kbd>⌘ K</kbd></label>
+            <button class="new-chat" type="button" data-new-chat><span>＋</span> New conversation</button>
+        </div>
+        <div class="section-label"><span>Messages</span><span data-conversation-count>@Model.Conversations.Count</span></div>
+        <nav class="conversation-list" aria-label="Conversations">
+            @foreach (var conversation in Model.Conversations)
+            {
+                <button type="button" class="conversation @(conversation.Id == "elena" ? "active" : null)" data-conversation data-id="@conversation.Id" data-name="@conversation.Name" data-initials="@conversation.Initials" data-accent="@conversation.Accent" data-online="@conversation.Online.ToString().ToLowerInvariant()">
+                    <span class="avatar @conversation.Accent">@conversation.Initials<span class="presence @(conversation.Online ? "online" : null)"></span></span>
+                    <span class="conversation-copy"><span class="conversation-line"><strong>@conversation.Name</strong><time>@conversation.Time</time></span><span class="conversation-line"><span class="preview">@conversation.Preview</span>@if(conversation.Unread > 0){<span class="unread">@conversation.Unread</span>}</span></span>
+                </button>
+            }
+        </nav>
+        <footer class="profile">
+            <span class="avatar ink">@Model.UserInitials<span class="presence online"></span></span>
+            <span class="profile-copy"><strong>@User.Identity?.Name</strong><a asp-area="Identity" asp-page="/Account/Manage/Index">Manage account</a></span>
+            <form asp-area="Identity" asp-page="/Account/Logout" asp-route-returnUrl="/" method="post"><button class="icon-button" type="submit" title="Sign out" aria-label="Sign out">@Html.Raw(Icon("chevron"))</button></form>
+        </footer>
+    </aside>
+
+    <section class="chat-panel">
+        <header class="chat-header">
+            <button class="icon-button back-button" type="button" data-chat-back aria-label="Back">@Html.Raw(Icon("back"))</button>
+            <span class="avatar rose" data-chat-avatar>EV<span class="presence online" data-chat-presence></span></span>
+            <div class="chat-person"><strong data-chat-name>Elena Vasquez</strong><span><i></i><span data-chat-status>Online now</span></span></div>
+            <div class="header-actions"><span class="secure-pill">@Html.Raw(Icon("info")) Preview</span><button class="icon-button" type="button" aria-label="Conversation details">@Html.Raw(Icon("info"))</button></div>
+        </header>
+        <div class="messages" data-messages>
+            <div class="date-divider"><span>Today</span></div>
+            <div class="security-note">@Html.Raw(Icon("shield"))<div><strong>Local frontend preview</strong><span>Connect the browser client to your authorized SignalR hub when the backend contract is ready.</span></div></div>
+            @foreach (var message in Model.Messages)
+            {
+                <article class="message-row @(message.IsMine ? "mine" : null)" data-message data-conversation-id="@message.ConversationId">
+                    @if (!message.IsMine){<span class="avatar message-avatar rose">EV</span>}
+                    <div class="message-wrap"><div class="bubble">@message.Body</div><div class="message-meta"><time>@message.SentAt.ToLocalTime().ToString("HH:mm")</time>@if(message.IsMine){<span class="checks">✓✓</span>}</div></div>
+                </article>
+            }
+        </div>
+        <footer class="composer-area">
+            <div class="status-message" data-chat-notice hidden></div>
+            <form class="composer" data-composer><button type="button" class="icon-button" aria-label="Attach file">@Html.Raw(Icon("paperclip"))</button><textarea rows="1" maxlength="2000" placeholder="Write a message…" aria-label="Message" data-message-input></textarea><button type="button" class="icon-button" aria-label="Add emoji">@Html.Raw(Icon("smile"))</button><button class="send-button" type="submit" disabled aria-label="Send">@Html.Raw(Icon("send"))</button></form>
+            <div class="composer-foot"><span>@Html.Raw(Icon("info")) Local preview — no server connection</span><span data-character-count>0 / 2000</span></div>
+        </footer>
+    </section>
+</div>
+
+@functions {
+    private static string Icon(string name) => $"<svg class='icon' viewBox='0 0 24 24' aria-hidden='true'><use href='#icon-{name}'></use></svg>";
+}
+
+<svg class="svg-defs" aria-hidden="true"><defs>
+<symbol id="icon-search"><circle cx="11" cy="11" r="6"/><path d="m16 16 4 4"/></symbol><symbol id="icon-dots"><circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/></symbol><symbol id="icon-chevron"><path d="m9 6 6 6-6 6"/></symbol><symbol id="icon-back"><path d="m15 18-6-6 6-6"/></symbol><symbol id="icon-info"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/></symbol><symbol id="icon-shield"><path d="M12 3 5 6v5c0 4.8 2.9 8.2 7 10 4.1-1.8 7-5.2 7-10V6l-7-3Z"/><path d="m9 12 2 2 4-4"/></symbol><symbol id="icon-paperclip"><path d="m9 12 5.7-5.7a3 3 0 0 1 4.3 4.3l-7.8 7.8a5 5 0 0 1-7.1-7.1l7.1-7.1"/></symbol><symbol id="icon-smile"><circle cx="12" cy="12" r="9"/><path d="M8.5 14.5s1.2 2 3.5 2 3.5-2 3.5-2M9 9h.01M15 9h.01"/></symbol><symbol id="icon-send"><path d="m4 4 17 8-17 8 3-8-3-8Z"/><path d="M7 12h14"/></symbol>
+</defs></svg>
+
+@section Scripts { <script src="~/js/chat.js" asp-append-version="true"></script> }

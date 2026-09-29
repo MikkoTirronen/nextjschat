@@ -1,34 +1,49 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Quietline chat frontend
 
-## Getting Started
+A .NET 10 ASP.NET Core Razor Pages (`.cshtml`) frontend for a SignalR chat application. It uses ASP.NET Core Identity cookie authentication and SQLite for local development.
 
-First, run the development server:
+## Run locally
 
-```bash
-npm run dev
-# or
-yarn dev
+```powershell
+dotnet restore
+dotnet run
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open the URL printed by `dotnet run`. Anonymous users are redirected server-side to the built-in Identity login page.
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+- Register: `/Identity/Account/Register`
+- Login: `/Identity/Account/Login`
+- Chat: `/`
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+Account confirmation is disabled only in Development so the frontend can be previewed without an email service. Production requires confirmed accounts.
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+## Project structure
 
-## Learn More
+- `Pages/Index.cshtml` — chat markup
+- `Pages/Index.cshtml.cs` — authenticated PageModel and preview data
+- `Pages/Shared/_Layout.cshtml` — shared HTML document
+- `wwwroot/app.css` — responsive styling
+- `wwwroot/js/chat.js` — local preview interactions
+- `Data/` — Identity user, EF Core context, migrations, and development database
 
-To learn more about Next.js, take a look at the following resources:
+Create or update the development database with:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```powershell
+dotnet ef database update
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+## SignalR integration
 
-## Deploy on Vercel
+The current composer is a browser-only preview. Add the official `@microsoft/signalr` browser client to `wwwroot` when the hub contract is ready, then replace the local send behavior in `wwwroot/js/chat.js`.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+For a same-origin hub, the protected Identity cookie is sent during SignalR negotiation automatically. Protect the hub with `[Authorize]` and enforce conversation membership inside every hub method. The UI must never be treated as an authorization boundary.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+## Production checklist
+
+- Use HTTPS/WSS and a persistent ASP.NET Core Data Protection key ring.
+- Use a production database and move its connection string to deployment configuration or a secret store.
+- Apply migrations as a controlled deployment step.
+- Configure a transactional email provider for account confirmation and recovery.
+- Validate message length and conversation membership on the server.
+- Avoid logging message bodies, authentication cookies, and tokens.
+- Use a reviewed end-to-end encryption protocol if the server must not be able to read messages.
